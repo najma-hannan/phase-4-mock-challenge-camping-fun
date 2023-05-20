@@ -1,14 +1,16 @@
 class CampersController < ApplicationController
-  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
-  rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity_response
+  rescue_from ActiveRecord::RecordNotFound, with: :camper_not_found
+  rescue_from ActiveRecord::RecordInvalid, with: :invalid_camper
+  wrap_parameters format: []
 
   def index
-    render json: Camper.all
+    campers = Camper.all
+    render json: campers, status: :ok
   end
 
   def show
     camper = find_camper
-    render json: camper, serializer: CamperWithActivitiesSerializer
+    render json: camper, serializer: CampersAndActivitiesSerializer, status: :ok
   end
 
   def create
@@ -26,12 +28,15 @@ class CampersController < ApplicationController
     Camper.find(params[:id])
   end
 
-  def render_not_found_response
+  def camper_not_found
     render json: { error: "Camper not found" }, status: :not_found
   end
 
-  def render_unprocessable_entity_response(exception)
-    render json: { errors: exception.record.errors.full_messages }, status: :unprocessable_entity
+  def invalid_camper
+    render json: {
+             errors: ["validation errors"]
+           },
+           status: :unprocessable_entity
   end
 
 end

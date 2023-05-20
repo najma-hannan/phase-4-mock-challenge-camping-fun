@@ -1,8 +1,7 @@
 class ActivitiesController < ApplicationController
-  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
-
+  rescue_from ActiveRecord::RecordNotFound, with: :activity_not_found
   def index
-    render json: Activity.all
+    render json: Activity.all, status: :ok
   end
 
   def destroy
@@ -17,7 +16,7 @@ class ActivitiesController < ApplicationController
     Activity.find(params[:id])
   end
 
-  def render_not_found_response
+  def activity_not_found
     render json: { error: "Activity not found" }, status: :not_found
   end
 
